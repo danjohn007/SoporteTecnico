@@ -27,7 +27,7 @@ date_default_timezone_set('America/Mexico_City');
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'arosport_soporte');
 define('DB_USER', 'arosport_soporte'); // TODO: Change to dedicated user in production
-define('DB_PASS', 'TU_CONTRASEÑA_AQUI'); // TODO: Set strong password in production
+define('DB_PASS', 'YOUR_PASSWORD_HERE'); // TODO: Set strong password in production
 define('DB_CHARSET', 'utf8mb4');
 
 // Auto-detect BASE_URL

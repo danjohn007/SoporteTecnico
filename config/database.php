@@ -24,8 +24,8 @@ class Database {
             
             // Show user-friendly error page
             http_response_code(503);
-            $errorMessage = "Error de Conexión a la Base de Datos";
-            $errorDetails = "No se pudo conectar a la base de datos. Por favor, contacte al administrador del sistema.";
+            $errorMessage = htmlspecialchars("Error de Conexión a la Base de Datos");
+            $errorDetails = htmlspecialchars("No se pudo conectar a la base de datos. Por favor, contacte al administrador del sistema.");
             
             // In development mode, log more details but don't expose them to users
             if (getenv('APP_ENV') === 'development') {
@@ -51,7 +51,7 @@ class Database {
 <body>
     <div class="error-container">
         <div class="icon">⚠️</div>
-        <h1>' . htmlspecialchars($errorMessage) . '</h1>
+        <h1>' . $errorMessage . '</h1>
         <p>' . $errorDetails . '</p>
     </div>
 </body>
