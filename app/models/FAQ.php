@@ -127,8 +127,15 @@ class FAQ {
      * Mark as helpful
      */
     public function markHelpful($id, $isHelpful = true) {
+        // Validate field to prevent SQL injection
         $field = $isHelpful ? 'helpful_count' : 'not_helpful_count';
-        $stmt = $this->db->prepare("UPDATE faqs SET $field = $field + 1 WHERE id = ?");
+        
+        if ($field === 'helpful_count') {
+            $stmt = $this->db->prepare("UPDATE faqs SET helpful_count = helpful_count + 1 WHERE id = ?");
+        } else {
+            $stmt = $this->db->prepare("UPDATE faqs SET not_helpful_count = not_helpful_count + 1 WHERE id = ?");
+        }
+        
         return $stmt->execute([$id]);
     }
     

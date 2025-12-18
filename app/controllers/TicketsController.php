@@ -23,8 +23,11 @@ class TicketsController extends BaseController {
         $userId = $_SESSION['user_id'];
         $estado = $this->getQuery('estado');
         
+        // Validate estado against allowed values
+        $allowedStates = ['abierto', 'en_proceso', 'en_espera_cliente', 'resuelto', 'cerrado'];
+        
         $filters = [];
-        if ($estado) {
+        if ($estado && in_array($estado, $allowedStates)) {
             $filters['estado'] = $estado;
         }
         

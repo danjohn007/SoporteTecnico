@@ -137,6 +137,9 @@ function generateToken() {
  */
 function formatDate($date, $format = 'd/m/Y H:i') {
     $timestamp = is_string($date) ? strtotime($date) : $date;
+    if ($timestamp === false) {
+        return 'Fecha inválida';
+    }
     return date($format, $timestamp);
 }
 

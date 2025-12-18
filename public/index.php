@@ -34,8 +34,19 @@ $url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : 'home';
 $url = filter_var($url, FILTER_SANITIZE_URL);
 $url = explode('/', $url);
 
+// Whitelist of allowed controllers for security
+$allowedControllers = [
+    'home', 'auth', 'dashboard', 'tickets', 'faq', 'chatbot', 
+    'admin', 'settings', 'agent', 'notifications'
+];
+
 // Determine controller and method
-$controllerName = !empty($url[0]) ? ucfirst($url[0]) . 'Controller' : 'HomeController';
+$controllerPath = !empty($url[0]) ? strtolower($url[0]) : 'home';
+if (!in_array($controllerPath, $allowedControllers)) {
+    $controllerPath = 'home';
+}
+
+$controllerName = ucfirst($controllerPath) . 'Controller';
 $methodName = isset($url[1]) && !empty($url[1]) ? $url[1] : 'index';
 $params = array_slice($url, 2);
 

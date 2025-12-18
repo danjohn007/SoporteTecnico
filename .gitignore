@@ -3,6 +3,11 @@
 .env.local
 config/local.php
 
+# Logs
+*.log
+logs/*
+!logs/.gitkeep
+
 # Operating System Files
 .DS_Store
 Thumbs.db

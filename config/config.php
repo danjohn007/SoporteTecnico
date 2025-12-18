@@ -4,19 +4,30 @@
  * Database credentials and system settings
  */
 
-// Error reporting for development
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Error reporting - disable in production
+$environment = getenv('APP_ENV') ?: 'production'; // Set APP_ENV=development for dev mode
+if ($environment === 'development') {
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+} else {
+    ini_set('display_errors', 0);
+    ini_set('display_startup_errors', 0);
+    error_reporting(0);
+    ini_set('log_errors', 1);
+    ini_set('error_log', __DIR__ . '/../logs/php-error.log');
+}
 
 // Timezone
 date_default_timezone_set('America/Mexico_City');
 
 // Database Configuration
+// IMPORTANT: Change these credentials in production!
+// Create a dedicated database user with limited privileges
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'soporte_tecnico');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_USER', 'root'); // TODO: Change to dedicated user in production
+define('DB_PASS', ''); // TODO: Set strong password in production
 define('DB_CHARSET', 'utf8mb4');
 
 // Auto-detect BASE_URL
