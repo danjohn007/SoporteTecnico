@@ -89,7 +89,7 @@ mysql -u root -p arosport_soporte < database.sql
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'arosport_soporte');
 define('DB_USER', 'arosport_soporte');
-define('DB_PASS', 'Danjohn007!');
+define('DB_PASS', 'TU_CONTRASEÑA_SEGURA_AQUI');
 ```
 
 ### 4. Permisos de archivos
@@ -166,9 +166,9 @@ Por defecto, el sistema está en modo producción:
 # Verificar MySQL
 sudo service mysql status
 
-# Verificar credenciales
+# Verificar credenciales (usa tu propia contraseña)
 mysql -h localhost -u arosport_soporte -p
-# Ingresar password: Danjohn007!
+# Ingresar tu contraseña cuando se solicite
 
 # Verificar base de datos
 mysql -u root -p -e "SHOW DATABASES LIKE 'arosport_soporte';"

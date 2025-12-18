@@ -27,9 +27,10 @@ class Database {
             $errorMessage = "Error de Conexión a la Base de Datos";
             $errorDetails = "No se pudo conectar a la base de datos. Por favor, contacte al administrador del sistema.";
             
-            // In development mode, show more details
+            // In development mode, log more details but don't expose them to users
             if (getenv('APP_ENV') === 'development') {
-                $errorDetails .= "<br><br><strong>Detalles técnicos:</strong><br>" . htmlspecialchars($e->getMessage());
+                error_log("Database Error Details: " . $e->getMessage());
+                $errorDetails .= "<br><br><em>Los detalles del error se han registrado en el log del sistema.</em>";
             }
             
             // Display error page
