@@ -21,6 +21,7 @@ try {
     echo "   ✓ Config loaded successfully\n";
     echo "   - BASE_URL: " . BASE_URL . "\n";
     echo "   - DB_NAME: " . DB_NAME . "\n";
+    echo "   - DB_HOST: " . DB_HOST . "\n";
 } catch (Exception $e) {
     echo "   ✗ Config failed: " . $e->getMessage() . "\n";
     exit(1);
@@ -109,6 +110,7 @@ try {
 echo "\n----------------------------\n";
 echo "Bootstrap test completed!\n";
 echo "\nIf database connection failed, make sure to:\n";
-echo "1. Create the database: CREATE DATABASE " . DB_NAME . ";\n";
-echo "2. Import schema: mysql -u " . DB_USER . " -p " . DB_NAME . " < database.sql\n";
+echo "1. Create the database: CREATE DATABASE <database_name>;\n";
+echo "2. Import schema: mysql -u <username> -p <database_name> < database.sql\n";
 echo "3. Update credentials in config/config.php if needed\n";
+echo "\nCheck config/config.php for current database settings.\n";

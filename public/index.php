@@ -73,8 +73,8 @@ try {
     // Call the method with parameters
     call_user_func_array([$controller, $methodName], $params);
 } catch (Exception $e) {
-    // Log the error
-    error_log("Controller error: " . $e->getMessage());
+    // Log the error to file
+    error_log('Controller error: ' . $e->getMessage(), 3, __DIR__ . '/../logs/php-error.log');
     
     // Show error page
     http_response_code(500);
