@@ -324,7 +324,7 @@ function e($string) {
  * Get asset URL
  */
 function asset($path) {
-    return BASE_URL . '/public/' . ltrim($path, '/');
+    return BASE_URL . '/' . ltrim($path, '/');
 }
 
 /**

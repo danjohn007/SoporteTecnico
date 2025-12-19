@@ -36,7 +36,11 @@ function detectBaseUrl() {
     $host = $_SERVER['HTTP_HOST'];
     $script = $_SERVER['SCRIPT_NAME'];
     $directory = str_replace('\\', '/', dirname($script));
+    
+    // Remove /public from the directory path if present
+    $directory = str_replace('/public', '', $directory);
     $directory = ($directory === '/') ? '' : $directory;
+    
     return $protocol . "://" . $host . $directory;
 }
 
