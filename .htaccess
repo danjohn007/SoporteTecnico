@@ -17,8 +17,13 @@ Options -Indexes
 
 # Secure sensitive files
 <FilesMatch "^(config\.php|database\.php|\.env)$">
-    Order allow,deny
-    Deny from all
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
 # Set default charset

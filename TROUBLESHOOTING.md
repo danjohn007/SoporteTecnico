@@ -1,8 +1,58 @@
 # Guía de Solución de Problemas - Sistema de Soporte Técnico
 
-## Problemas Resueltos
+## Problemas Comunes y Soluciones
 
-### 1. Error con .htaccess que no permitía entrar al sistema
+### 1. ERROR 403 - FORBIDDEN al acceder al sistema
+
+**Síntomas:**
+- Al intentar acceder al sistema aparece "ERROR 403 - FORBIDDEN"
+- El navegador muestra "You don't have permission to access this resource"
+
+**Causa:**
+- El archivo `.htaccess` usa sintaxis de Apache 2.2 en un servidor con Apache 2.4+
+- Apache 2.4 cambió la sintaxis de control de acceso de `Order/Allow/Deny` a `Require`
+
+**Solución Implementada:**
+- Se actualizó `public/.htaccess` para usar sintaxis de Apache 2.4 (`Require all granted`)
+- Se agregó compatibilidad hacia atrás con Apache 2.2
+- Se actualizó el `.htaccess` raíz con la misma lógica
+
+**Archivos modificados:**
+- `.htaccess` (raíz)
+- `public/.htaccess`
+
+**Para verificar si este es tu problema:**
+```bash
+# Verifica la versión de Apache
+apache2 -v
+# Si es 2.4+, necesitas la sintaxis nueva
+```
+
+### 2. HTTP ERROR 500 al crear tickets o abrir FAQ
+
+**Síntomas:**
+- Al intentar crear un ticket: HTTP ERROR 500
+- Al abrir el módulo FAQ: HTTP ERROR 500
+- Puede aparecer "Error de Conexión a la Base de Datos"
+
+**Causas posibles:**
+1. **Base de datos no creada o no configurada**
+2. **Credenciales incorrectas en config.php**
+3. **Permisos insuficientes del usuario de base de datos**
+4. **Tablas no importadas en la base de datos**
+
+**Soluciones Implementadas:**
+- Se mejoró el manejo de errores para mostrar mensajes claros
+- Se agregó validación de $_SERVER en detectBaseUrl()
+- Se agregó try-catch en index.php para capturar errores
+- Los errores se registran en `logs/php-error.log`
+
+**Archivos modificados:**
+- `config/config.php` - Mejor detección de BASE_URL
+- `config/database.php` - Mejor manejo de errores
+- `public/index.php` - Manejo de excepciones en controllers
+
+### 3. Error con .htaccess que no permitía entrar al sistema
 
 **Problema:** El archivo `.htaccess` en la raíz tenía reglas de reescritura conflictivas y `RewriteBase /` hardcodeado, lo que impedía el acceso correcto al sistema, especialmente cuando se instalaba en un subdirectorio.
 
@@ -16,39 +66,92 @@
 - **Ahora funciona tanto en la raíz como en subdirectorios** (ej: `/SoporteTecnico/`, `/proyectos/soporte/`)
 
 **Archivo modificado:** `.htaccess`
-
-### 2. HTTP ERROR 500 en /public/tickets, /public/tickets/create, /public/faq
-
-**Problema:** Errores HTTP 500 causados por varios factores:
-1. Manejo inadecuado de errores de conexión a la base de datos
-2. Detección incorrecta de BASE_URL que incluía `/public/`
-3. Función `asset()` generaba URLs incorrectas
-
-**Soluciones Implementadas:**
-
-#### a) Mejora en el manejo de errores de base de datos
-- Se reemplazó `die()` con manejo de errores más robusto
-- Se muestra una página de error amigable (HTTP 503) cuando falla la conexión
-- Los errores se registran en el log del sistema
-- En modo desarrollo, se muestran detalles técnicos
-
-**Archivo modificado:** `config/database.php`
-
-#### b) Corrección de BASE_URL
-- La función `detectBaseUrl()` ahora excluye correctamente `/public/` del URL base
-- Esto asegura que todas las rutas y redirecciones funcionen correctamente
-
-**Archivo modificado:** `config/config.php`
-
-#### c) Corrección de función asset()
-- La función `asset()` ahora genera URLs correctas que funcionan con las redirecciones .htaccess
-- Ya no agrega `/public/` duplicado a las rutas de assets
-
-**Archivo modificado:** `app/helpers.php`
-
-#### d) Estructura de directorios
-- Se creó el directorio `logs/` para registro de errores
 - Se creó el directorio `public/uploads/` para archivos subidos
+
+## Pasos para Resolver los Errores Reportados
+
+### Si tienes ERROR 403 - FORBIDDEN:
+
+1. **Verifica la versión de Apache:**
+   ```bash
+   apache2 -v
+   ```
+   
+2. **Si tienes Apache 2.4+**, asegúrate que los archivos `.htaccess` tengan la sintaxis correcta:
+   
+   En `public/.htaccess` debe haber:
+   ```apache
+   <IfModule mod_authz_core.c>
+       Require all granted
+   </IfModule>
+   <IfModule !mod_authz_core.c>
+       Order allow,deny
+       Allow from all
+   </IfModule>
+   ```
+
+3. **Verifica que mod_rewrite esté habilitado:**
+   ```bash
+   sudo a2enmod rewrite
+   sudo systemctl restart apache2
+   ```
+
+4. **Verifica permisos de los archivos:**
+   ```bash
+   # Los archivos deben tener permisos de lectura
+   chmod 644 .htaccess public/.htaccess
+   chmod 755 public/
+   ```
+
+### Si tienes HTTP ERROR 500 en tickets o FAQ:
+
+1. **Verifica que la base de datos esté creada:**
+   ```bash
+   mysql -u root -p
+   ```
+   ```sql
+   SHOW DATABASES;
+   -- Debe aparecer 'systemco_soporte' o el nombre en config.php
+   ```
+
+2. **Si la base de datos NO existe, créala:**
+   ```sql
+   CREATE DATABASE systemco_soporte CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+
+3. **Importa el esquema de la base de datos:**
+   ```bash
+   mysql -u systemco_soporte -p systemco_soporte < database.sql
+   ```
+
+4. **Verifica las credenciales en `config/config.php`:**
+   ```php
+   define('DB_HOST', 'localhost');
+   define('DB_NAME', 'systemco_soporte');
+   define('DB_USER', 'systemco_soporte');
+   define('DB_PASS', 'TU_CONTRASEÑA_AQUI');
+   ```
+
+5. **Prueba la conexión a la base de datos:**
+   ```bash
+   php test_bootstrap.php
+   ```
+   
+   Este script te dirá exactamente qué está fallando.
+
+6. **Revisa los logs de error:**
+   ```bash
+   tail -f logs/php-error.log
+   # O los logs de Apache
+   tail -f /var/log/apache2/error.log
+   ```
+
+7. **Si el usuario de base de datos no existe, créalo:**
+   ```sql
+   CREATE USER 'systemco_soporte'@'localhost' IDENTIFIED BY 'TU_CONTRASEÑA_SEGURA';
+   GRANT ALL PRIVILEGES ON systemco_soporte.* TO 'systemco_soporte'@'localhost';
+   FLUSH PRIVILEGES;
+   ```
 
 ## Requisitos del Sistema
 
