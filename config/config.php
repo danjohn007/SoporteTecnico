@@ -25,8 +25,8 @@ date_default_timezone_set('America/Mexico_City');
 // IMPORTANT: Change these credentials in production!
 // Create a dedicated database user with limited privileges
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'arosport_soporte');
-define('DB_USER', 'arosport_soporte'); // TODO: Change to dedicated user in production
+define('DB_NAME', 'systemco_soporte');
+define('DB_USER', 'systemco_soporte'); // TODO: Change to dedicated user in production
 define('DB_PASS', 'Danjohn007!'); // TODO: Set strong password in production
 define('DB_CHARSET', 'utf8mb4');
 
