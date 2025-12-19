@@ -10,17 +10,22 @@ El sistema ya logró instalarse, pero presentaba los siguientes problemas:
 
 ## Soluciones Implementadas
 
-### 1. Corrección del .htaccess raíz
-**Problema:** El archivo `.htaccess` en la raíz del proyecto tenía reglas de reescritura conflictivas que impedían el correcto enrutamiento de las peticiones.
+### 1. Corrección del .htaccess raíz para Soportar Subdirectorios
+**Problema:** El archivo `.htaccess` en la raíz tenía `RewriteBase /` hardcodeado, lo cual impedía que el sistema funcionara correctamente cuando se instalaba en un subdirectorio (por ejemplo, `/SoporteTecnico/`). Las rutas solo funcionaban cuando el sistema estaba en la raíz del servidor web.
 
 **Solución:**
-- Se simplificó el `.htaccess` eliminando reglas redundantes
-- Se corrigió el flujo de redirección:
-  - Todas las peticiones se redirigen a la carpeta `public/`
-  - El `.htaccess` en `public/` maneja el enrutamiento a través de `index.php`
-  - Se evita el doble procesamiento de reglas que causaba el error
+- Se removió la línea `RewriteBase /` hardcodeada - Apache ahora auto-detecta el directorio base
+- Se cambió la condición `RewriteCond %{REQUEST_URI} !^/public/` a `RewriteCond %{REQUEST_URI} !/public/` para usar rutas relativas
+- Ahora el sistema funciona correctamente tanto en la raíz (`/`) como en subdirectorios (`/SoporteTecnico/`, `/proyectos/soporte/`, etc.)
+- Se verifica que la función `detectBaseUrl()` detecte correctamente el BASE_URL en cualquier ubicación
 
 **Archivo modificado:** `.htaccess`
+
+**Instalaciones Soportadas:**
+- ✅ Raíz del servidor: `http://localhost/`
+- ✅ Subdirectorio simple: `http://localhost/SoporteTecnico/`
+- ✅ Subdirectorio profundo: `http://localhost/proyectos/soporte/`
+- ✅ Con HTTPS: `https://ejemplo.com/SoporteTecnico/`
 
 ### 2. Mejora del Manejo de Errores de Base de Datos
 **Problema:** Cuando fallaba la conexión a la base de datos, el sistema mostraba un HTTP 500 genérico con un mensaje críptico usando `die()`.
@@ -193,6 +198,6 @@ Para problemas o preguntas:
 
 ---
 
-**Fecha de Corrección:** 18 de Diciembre, 2024  
-**Versión:** 1.0.1  
+**Fecha de Corrección:** 19 de Diciembre, 2024  
+**Versión:** 1.0.2  
 **Estado:** ✅ Completado y Verificado
