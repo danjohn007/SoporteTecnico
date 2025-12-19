@@ -4,13 +4,16 @@
 
 ### 1. Error con .htaccess que no permitía entrar al sistema
 
-**Problema:** El archivo `.htaccess` en la raíz tenía reglas de reescritura conflictivas que impedían el acceso correcto al sistema.
+**Problema:** El archivo `.htaccess` en la raíz tenía reglas de reescritura conflictivas y `RewriteBase /` hardcodeado, lo que impedía el acceso correcto al sistema, especialmente cuando se instalaba en un subdirectorio.
 
 **Solución Implementada:**
 - Se simplificó el `.htaccess` raíz para eliminar reglas redundantes
+- Se removió `RewriteBase /` hardcodeado - Apache ahora auto-detecta el directorio base
+- Se cambió la condición de REQUEST_URI para usar rutas relativas
 - Se corrigió el flujo de redirección para que funcione correctamente:
   1. Todas las peticiones se redirigen a la carpeta `public/`
   2. El `.htaccess` en `public/` maneja el enrutamiento a través de `index.php`
+- **Ahora funciona tanto en la raíz como en subdirectorios** (ej: `/SoporteTecnico/`, `/proyectos/soporte/`)
 
 **Archivo modificado:** `.htaccess`
 
@@ -201,6 +204,8 @@ AllowOverride All
 
 Con las correcciones implementadas, el sistema usa las siguientes URLs:
 
+### Instalación en la Raíz
+
 ```
 http://tu-dominio/                    → Página principal
 http://tu-dominio/auth/login          → Login
@@ -214,7 +219,35 @@ http://tu-dominio/chatbot             → Chatbot
 http://tu-dominio/admin               → Panel de administración
 ```
 
+### Instalación en Subdirectorio
+
+El sistema **ahora soporta instalación en subdirectorios** gracias a la detección automática del BASE_URL:
+
+```
+http://tu-dominio/SoporteTecnico/                    → Página principal
+http://tu-dominio/SoporteTecnico/auth/login          → Login
+http://tu-dominio/SoporteTecnico/tickets             → Lista de tickets
+... etc
+```
+
+O en subdirectorios profundos:
+
+```
+http://tu-dominio/proyectos/soporte/                 → Página principal
+http://tu-dominio/proyectos/soporte/auth/login       → Login
+... etc
+```
+
+**Nota:** No necesitas configurar nada manualmente. El sistema detecta automáticamente en qué directorio está instalado y ajusta todas las URLs en consecuencia.
+
 ## Registro de Cambios
+
+### Versión 1.0.2 - 2024-12-19
+
+- ✅ Corregido .htaccess para soportar instalaciones en subdirectorios
+- ✅ Removido RewriteBase hardcodeado para detección automática
+- ✅ Sistema ahora funciona en raíz, subdirectorios y subdirectorios profundos
+- ✅ Mejorada documentación sobre instalaciones en subdirectorios
 
 ### Versión 1.0.1 - 2024-12-18
 
