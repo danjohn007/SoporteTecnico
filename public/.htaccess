@@ -1,12 +1,6 @@
 # Prevent directory listing
 Options -Indexes
 
-# Allow access to static files
-<FilesMatch "\.(jpg|jpeg|png|gif|css|js|svg|ico|pdf)$">
-    Order allow,deny
-    Allow from all
-</FilesMatch>
-
 # Route all requests through index.php
 <IfModule mod_rewrite.c>
     RewriteEngine On
@@ -26,4 +20,16 @@ DirectoryIndex index.php
 <IfModule mod_headers.c>
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# Apache 2.4+ compatible access control
+<IfModule mod_authz_core.c>
+    # Allow access to this directory
+    Require all granted
+</IfModule>
+
+# Fallback for Apache 2.2
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Allow from all
 </IfModule>

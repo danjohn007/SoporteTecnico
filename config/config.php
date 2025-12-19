@@ -32,9 +32,15 @@ define('DB_CHARSET', 'utf8mb4');
 
 // Auto-detect BASE_URL
 function detectBaseUrl() {
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
-    $host = $_SERVER['HTTP_HOST'];
-    $script = $_SERVER['SCRIPT_NAME'];
+    // Check if we're running in CLI mode
+    if (php_sapi_name() === 'cli') {
+        // Return a default for CLI mode
+        return 'http://localhost';
+    }
+    
+    $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $script = $_SERVER['SCRIPT_NAME'] ?? '/index.php';
     $directory = str_replace('\\', '/', dirname($script));
     
     // Remove /public from the directory path if present
