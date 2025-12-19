@@ -60,13 +60,45 @@ if (!file_exists($controllerFile)) {
 
 // Instantiate controller
 require_once __DIR__ . '/../app/controllers/' . $controllerName . '.php';
-$controller = new $controllerName();
 
-// Check if method exists
-if (!method_exists($controller, $methodName)) {
-    $methodName = 'notFound';
-    $params = [];
+try {
+    $controller = new $controllerName();
+    
+    // Check if method exists
+    if (!method_exists($controller, $methodName)) {
+        $methodName = 'notFound';
+        $params = [];
+    }
+    
+    // Call the method with parameters
+    call_user_func_array([$controller, $methodName], $params);
+} catch (Exception $e) {
+    // Log the error
+    error_log("Controller error: " . $e->getMessage());
+    
+    // Show error page
+    http_response_code(500);
+    echo '<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error del Sistema</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .error-container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 500px; text-align: center; }
+        .error-container h1 { color: #dc2626; margin-top: 0; }
+        .error-container p { color: #4b5563; line-height: 1.6; }
+        .error-container .icon { font-size: 3rem; color: #dc2626; }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="icon">⚠️</div>
+        <h1>Error del Sistema</h1>
+        <p>Ha ocurrido un error inesperado. Por favor, contacte al administrador del sistema.</p>
+    </div>
+</body>
+</html>';
+    exit();
 }
-
-// Call the method with parameters
-call_user_func_array([$controller, $methodName], $params);
